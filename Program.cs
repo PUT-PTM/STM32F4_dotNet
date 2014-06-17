@@ -11,7 +11,7 @@ namespace MFConsoleApplication1
         static SPI MySPI = null;
         public static void TimerCallback(object state)
         {
-            //Debug.Print(DateTime.Now.Second.ToString());
+            Debug.Print(DateTime.Now.Second.ToString());
         }
         public static void WriteRegister(byte register, byte data)
         {
@@ -33,25 +33,23 @@ namespace MFConsoleApplication1
         public static int Config()
         {
             if (ReadRegister(0x0F) == 0x3b)
-                Debug.Print("działa"); 
+                Debug.Print("Work"); 
             else 
-                Debug.Print("niedziała"); 
+                Debug.Print("Dont work"); 
             WriteRegister(0x20, 0xC7);
             return 0;
         }
         public static void Main()
         {
-            InterruptPort przycisk =
-                new InterruptPort(Pins.GPIO_PIN_A_0, false, Port.ResistorMode.PullDown, Port.InterruptMode.InterruptEdgeLevelHigh);//przycisk
-            var green = new PWM(Cpu.PWMChannel.PWM_0, 300, 0, false);//zielona
-            var orange = new PWM(Cpu.PWMChannel.PWM_1, 300, 0, false);//pomaranczowa
-            var red = new PWM(Cpu.PWMChannel.PWM_2, 300, 0, false); //czerwona
-            var blue = new PWM(Cpu.PWMChannel.PWM_3, 300, 0, false);//niebieska
+            var green = new PWM(Cpu.PWMChannel.PWM_0, 300, 0, false);
+            var orange = new PWM(Cpu.PWMChannel.PWM_1, 300, 0, false);
+            var red = new PWM(Cpu.PWMChannel.PWM_2, 300, 0, false); 
+            var blue = new PWM(Cpu.PWMChannel.PWM_3, 300, 0, false);
             green.Start();
             orange.Start();
             red.Start();
             blue.Start();
-            int x = 0, y = 0, z = 0; 
+            int x;
             var timer = new System.Threading.Timer(TimerCallback, null, 0, 1000);
             SPI.Configuration MyConfig =
                 new SPI.Configuration(Pins.GPIO_PIN_E_3, false, 0, 0, true, true, 1000, SPI.SPI_module.SPI1);
@@ -79,7 +77,7 @@ namespace MFConsoleApplication1
                 if ((ReadRegister(0x2B) < 140) && (ReadRegister(0x2B) > 20))
                     green.DutyCycle = 1;
                 x = DateTime.Now.Millisecond;
-                if (x + 200 >= 999) x -= 999;
+                if (x + 200 >= 999) x -= 999; 
                 Debug.Print(ReadRegister(0x29).ToString() + " " + ReadRegister(0x2B).ToString() + " " + ReadRegister(0x2D).ToString() + " " + x);
                 while (DateTime.Now.Millisecond<= x + 200) { }
             }
